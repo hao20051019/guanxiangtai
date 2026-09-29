@@ -533,3 +533,17 @@ nav.main a.on{color:var(--ink);}
   .vh-head{font-size:26px;}
   .dg-glyph{margin-left:0;}
 }
+
+
+/* ================= 引文翻页器 ================= */
+.qpage[hidden]{display:none;}
+.qpager{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px;}
+.qnum{min-width:34px;height:32px;padding:0 10px;border:1px solid var(--line-light);color:var(--ink-dark);
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;transition:background .15s,color .15s;}
+.qnum:hover{background:rgba(23,26,24,.08);}
+.qnum.on{background:var(--ink-dark);color:var(--paper);}
+.qpage-no{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--paper-muted);margin-left:6px;}
+.classic .qnum{border-color:var(--line-dark);color:var(--ink);}
+.classic .qnum:hover{background:var(--surface-raised);}
+.classic .qnum.on{background:var(--brass);color:var(--ink-dark);}
+.classic .qpage-no{color:var(--ink-muted);}

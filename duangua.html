@@ -160,7 +160,7 @@
   }
 
   function quote(src, text){
-    return '<div class="classic-paper"><div class="src">' + esc(src) + '</div><div class="txt">' + esc(text) + '</div></div>';
+    return renderQuote(src, text, false);
   }
   function read(tagline, paras){
     return '<div class="dg-read"><div class="tagline">' + esc(tagline) + '</div>' +
@@ -287,7 +287,7 @@
     var html = '<section class="dg-step" id="dg-tiyong">';
     html += '<div class="dg-head"><span class="no">04 / 体用</span><h3>体用关系 · 谁主谁从</h3></div>';
     html += '<div class="dg-brief">动爻在' + (c.move <= 3 ? "下卦" : "上卦") + '，动者为用、静者为体：体卦' + esc(c.ti.name) + '（' + esc(c.ti.elem) + '）代表自身与立场，用卦' + esc(c.yong.name) + '（' + esc(c.yong.elem) + '）代表所问之事与外境。</div>';
-    if (MH["体用总诀"]) html += quote("《梅花易数·体用总诀》（节录）", MH["体用总诀"].slice(0, 220) + "…");
+    if (MH["体用总诀"]) html += quote("《梅花易数·体用总诀》（全文）", MH["体用总诀"]);
     html += read("解读", [
       "体用" + esc(c.rel) + "：" + esc(v.head) + esc(v.text),
       "五行关系上，体" + esc(c.ti.elem) + "、用" + esc(c.yong.elem) + "，" + {
@@ -388,8 +388,8 @@
       "【典籍原文·本卦】" + guaFull(c.benName),
       "【典籍原文·互卦】" + guaFull(c.huName),
       "【典籍原文·变卦】" + guaFull(c.biName),
-      "【典籍原文·《梅花易数》体用总诀】" + (MH["体用总诀"] || "").slice(0, 600),
-      "【典籍原文·《梅花易数》体用互变之诀】" + (MH["体用互变之诀"] || "").slice(0, 300)
+      "【典籍原文·《梅花易数》体用总诀（全文）】" + (MH["体用总诀"] || ""),
+      "【典籍原文·《梅花易数》体用互变之诀（全文）】" + (MH["体用互变之诀"] || "")
     ].join("\n");
   }
   var SYS_PROMPT = [

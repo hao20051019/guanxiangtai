@@ -131,7 +131,7 @@
       '<p class="label" style="letter-spacing:.22em;color:var(--brass);">' + esc(l.mod) + '</p>' +
       l.body.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join("") +
       (l.quotes || []).map(function(q){
-        return '<blockquote class="classic"><div class="src">' + esc(q.src) + '</div><div class="txt">' + esc(q.text) + '</div></blockquote>';
+        return renderQuote(q.src, q.text, true);
       }).join("");
   }
   renderLesson(0);

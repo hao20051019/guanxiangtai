@@ -327,3 +327,65 @@ function parseTime(t){
   var d = new Date(s);
   return isNaN(d.getTime()) ? new Date() : d;
 }
+
+
+/* ================= 引文翻页阅读器（全文展示，不截断） ================= */
+function paginateText(text, per){
+  per = per || 340;
+  var t = String(text || ""), pages = [], buf = "";
+  for (var i = 0; i < t.length; i++){
+    buf += t.charAt(i);
+    if (buf.length >= per && "。！？；".indexOf(t.charAt(i)) > -1){
+      pages.push(buf); buf = "";
+    }
+  }
+  if (buf) pages.push(buf);
+  return pages.length ? pages : [t];
+}
+var _qpN = 0;
+function renderQuote(src, text, dark){
+  var pages = paginateText(text);
+  var base = dark ? "classic" : "classic-paper";
+  if (pages.length === 1){
+    return '<div class="' + base + '"><div class="src">' + esc(src) + '</div><div class="txt">' + esc(text) + '</div></div>';
+  }
+  var id = "qp" + (++_qpN);
+  var body = pages.map(function(p, i){
+    return '<div class="qpage" data-qid="' + id + '" data-qi="' + i + '"' + (i ? " hidden" : "") + '>' + esc(p) + '</div>';
+  }).join("");
+  var nums = pages.map(function(_, i){
+    return '<button type="button" class="qnum' + (i === 0 ? " on" : "") + '" data-qp="' + id + '" data-qi="' + i + '">' + (i + 1) + '</button>';
+  }).join("");
+  return '<div class="' + base + '"><div class="src">' + esc(src) + '（全文 · 分 ' + pages.length + ' 页读完）</div>' +
+    '<div class="txt">' + body + '</div>' +
+    '<div class="qpager">' +
+      '<button type="button" class="qnum" data-qp="' + id + '" data-qi="-1">‹ 上一页</button>' +
+      nums +
+      '<button type="button" class="qnum" data-qp="' + id + '" data-qi="-2">下一页 ›</button>' +
+      '<span class="qpage-no" data-qno="' + id + '">第 1 / ' + pages.length + ' 页</span>' +
+    '</div></div>';
+}
+if (typeof document !== "undefined") document.addEventListener("click", function(e){
+  var b = e.target.closest ? e.target.closest("[data-qp]") : null;
+  if (!b) return;
+  var id = b.getAttribute("data-qp");
+  var pages = document.querySelectorAll('[data-qid="' + id + '"]');
+  if (!pages.length) return;
+  var cur = 0, i;
+  for (i = 0; i < pages.length; i++){ if (!pages[i].hasAttribute("hidden")) cur = i; }
+  var want = Number(b.getAttribute("data-qi"));
+  if (want === -1) want = cur - 1;
+  if (want === -2) want = cur + 1;
+  if (want < 0) want = 0;
+  if (want > pages.length - 1) want = pages.length - 1;
+  for (i = 0; i < pages.length; i++){
+    if (i === want) pages[i].removeAttribute("hidden");
+    else pages[i].setAttribute("hidden", "");
+  }
+  var nums = document.querySelectorAll('[data-qp="' + id + '"][data-qi]:not([data-qi="-1"]):not([data-qi="-2"])');
+  Array.prototype.forEach.call(nums, function(n){
+    n.classList.toggle("on", Number(n.getAttribute("data-qi")) === want);
+  });
+  var no = document.querySelector('[data-qno="' + id + '"]');
+  if (no) no.textContent = "第 " + (want + 1) + " / " + pages.length + " 页";
+});
