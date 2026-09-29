@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0D0C">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>关于梅花易数 · 观象台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap hd">
+    <a class="brand" href="index.html">
+      <span class="mark">观象台</span>
+      <span class="sub">PLUM BLOSSOM NUMEROLOGY</span>
+    </a>
+    <nav class="main" id="nav">
+      <a href="index.html">起卦</a>
+      <a href="duangua.html">断卦</a>
+      <a href="xueyi.html">学习易理</a>
+      <a href="guandian.html">典籍卦典</a>
+      <a href="anli.html">案例记录</a>
+      <a href="guanyu.html" class="on">关于梅花易数</a>
+    </nav>
+    <div class="hd-right">
+      <a class="textlink" href="anli.html">我的记录
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M3 10h13M11 5l5 5-5 5"/></svg>
+      </a>
+      <button class="iconbtn menubtn" id="menuBtn" aria-label="打开导航菜单" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="num">关于 · 源流、方法与典籍</span>
+      <h2>梅花易数</h2>
+      <p>以数起卦、以象断意、以辞助读。此站的宗旨：先把典籍读透，把方法练熟，判断留给人。</p>
+    </div>
+  </section>
+
+  <div class="wrap page-pad">
+    <div class="sheet">
+      <div class="dg-head"><span class="no">01 / 源流</span><h3>邵雍与《梅花易数》</h3></div>
+      <div class="dg-read">
+        <p>《梅花易数》旧题宋·邵雍（康节先生）撰。相传邵雍观梅见雀争枝，布算知次晚有女子折花坠伤其股——「观梅占」因此得名，也是全书方法的示范：数起卦、象定意、辞助读，三者相参。</p>
+        <p>先天之数：乾一、兑二、离三、震四、巽五、坎六、艮七、坤八。未得卦先得数，以数起卦，谓之先天；未得数先得卦，以物类起卦，谓之后天。本馆两种起卦法（三数、年月日时）皆属先天。</p>
+      </div>
+
+      <div class="dg-step">
+        <div class="dg-head"><span class="no">02 / 方法</span><h3>两种起卦法</h3></div>
+        <div class="dg-summary">
+          <div class="row"><div class="k">三数起卦</div><div class="v">第一数 ÷ 8 取余为上卦，第二数 ÷ 8 取余为下卦，三数之和 ÷ 6 取余为动爻。余零则八取坤、六取上爻。</div></div>
+          <div class="row"><div class="k">时间起卦</div><div class="v">依《梅花易数·年月日时起例》：年支数（子1…亥12）+ 农历月数 + 农历日数 ÷ 8 余数为上卦，加时支数 ÷ 8 余数为下卦，年月日时总数 ÷ 6 余数为动爻。</div></div>
+          <div class="row"><div class="k">断卦次序</div><div class="v">体用生克 → 动爻位置 → 互卦过程 → 变卦趋势 → 卦名卦辞 → 落于所问之事。断卦页即按此序展开。</div></div>
+        </div>
+      </div>
+
+      <div class="dg-step">
+        <div class="dg-head"><span class="no">03 / 典籍</span><h3>文本来源与校勘</h3></div>
+        <div class="dg-read">
+          <p>本站典籍文本分三层：《周易》经传（64 卦辞、386 爻辞含用九用六、64 彖传、64 大象传）、《梅花易数》各诀（体用总诀、体用互变之诀、年月日时起例、观梅占等 21 篇）、《易传》（说卦传全 11 章、序卦、杂卦）。</p>
+          <p>《周易》文本取自三个独立来源逐条比对：繁体典籍库、大陆今注本、社区整理本。多数一致者胜出；分歧条目逐条人工裁决并查证原典（如困初六止于「三岁不觌」、震卦「恐惧修省」、剥卦「山附于地」）。异文依通行本（阮刻十三经注疏系统）定字。</p>
+        </div>
+      </div>
+
+      <div class="dg-step">
+        <div class="dg-head"><span class="no">04 / 使用</span><h3>使用说明</h3></div>
+        <div class="dg-read">
+          <p>起卦页生成卦象并自动进入断卦页；断卦页先给直白结果，再逐层给出本卦、互卦、变卦、体用与综合分析，每层都附典籍原文与解读。案例记录保存在你自己浏览器的本地存储中，不上传任何服务器。</p>
+          <p>AI 辅助解读由 MiMo 依典籍原文生成，提示词硬性约束「只引原文、不编造、区分【典籍原文】【传统解释】【推演】」。公开部署版不含 API 密钥，需在解读面板填入你自己的密钥（只存本机）。</p>
+        </div>
+      </div>
+
+      <div class="dg-step">
+        <div class="dg-head"><span class="no">05 / 边界</span><h3>占断的边界</h3></div>
+        <div class="dg-read">
+          <p>卦示趋势与关系，不示判决。同一卦问不同的事，落点完全不同——典籍提供结构，取舍在人。此网站用于传统文化学习与个人记录，不构成医疗、法律或投资建议。</p>
+        </div>
+        <div class="dg-actions">
+          <a class="btn-paper solid" href="index.html">去起卦</a>
+          <a class="btn-paper" href="xueyi.html">从第一课学起</a>
+          <a class="btn-paper" href="guandian.html">翻阅典籍卦典</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap ft">
+    <div>
+      <div class="ft-mark">观象台</div>
+    </div>
+    <div>
+      <h4>方法</h4>
+      <p>
+        <a class="link" href="index.html">三数起卦</a><br>
+        <a class="link" href="index.html">时间起卦</a><br>
+        <a class="link" href="xueyi.html">体用关系</a><br>
+        <a class="link" href="xueyi.html">互卦与变卦</a>
+      </p>
+    </div>
+    <div>
+      <h4>说明</h4>
+      <p>
+        <a class="link" href="guandian.html">典籍卦典</a><br>
+        <a class="link" href="guanyu.html">使用说明</a><br>
+        此网站用于传统文化学习与个人记录，不构成医疗、法律或投资建议。
+      </p>
+    </div>
+  </div>
+  <div class="wrap ft-bottom">
+    <span>观象台 · 梅花易数工作台</span>
+    <span>卦数取先天数 · 断语依典籍</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>

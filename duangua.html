@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0D0C">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>断卦 · 观象台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap hd">
+    <a class="brand" href="index.html">
+      <span class="mark">观象台</span>
+      <span class="sub">PLUM BLOSSOM NUMEROLOGY</span>
+    </a>
+    <nav class="main" id="nav">
+      <a href="index.html">起卦</a>
+      <a href="duangua.html" class="on">断卦</a>
+      <a href="xueyi.html">学习易理</a>
+      <a href="guandian.html">典籍卦典</a>
+      <a href="anli.html">案例记录</a>
+      <a href="guanyu.html">关于梅花易数</a>
+    </nav>
+    <div class="hd-right">
+      <a class="textlink" href="anli.html">我的记录
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M3 10h13M11 5l5 5-5 5"/></svg>
+      </a>
+      <button class="iconbtn menubtn" id="menuBtn" aria-label="打开导航菜单" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="duangua">
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="num">断卦 · 依典籍逐层解读</span>
+      <h2 id="dgHeading">断卦</h2>
+      <p id="dgSub">先看直白结果，再逐层读本卦、互卦、变卦与体用——每一步都有典籍原文作依据。</p>
+    </div>
+  </section>
+
+  <div class="wrap page-pad">
+    <div id="dgRoot"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap ft">
+    <div>
+      <div class="ft-mark">观象台</div>
+    </div>
+    <div>
+      <h4>方法</h4>
+      <p>
+        <a class="link" href="index.html">三数起卦</a><br>
+        <a class="link" href="index.html">时间起卦</a><br>
+        <a class="link" href="xueyi.html">体用关系</a><br>
+        <a class="link" href="xueyi.html">互卦与变卦</a>
+      </p>
+    </div>
+    <div>
+      <h4>说明</h4>
+      <p>
+        <a class="link" href="guandian.html">典籍卦典</a><br>
+        <a class="link" href="guanyu.html">使用说明</a><br>
+        此网站用于传统文化学习与个人记录，不构成医疗、法律或投资建议。
+      </p>
+    </div>
+  </div>
+  <div class="wrap ft-bottom">
+    <span>观象台 · 梅花易数工作台</span>
+    <span>卦数取先天数 · 断语依典籍</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+(function(){
+  "use strict";
+  var ZY = window.GZ.ZHOUYI, MH = window.GZ.MEIHUA;
+
+  /* ================= 取盘 ================= */
+  var params = new URLSearchParams(location.search);
+  var payload = null;
+  if (params.get("rec")){
+    loadRecords().forEach(function(r){ if (r.id === params.get("rec")) payload = r; });
+    if (payload) saveLastCast(payload);
+  }
+  if (!payload) payload = loadLastCast();
+
+  var root = document.getElementById("dgRoot");
+  if (!payload || payload.upperNum == null){
+    root.innerHTML =
+      '<div class="sheet"><div class="empty-state">'+
+      '<h3>尚未起卦</h3>'+
+      '<p>先到起卦页写下三个数字，或按年月日时起卦。<br>卦成之后，此处会逐层展开断卦。</p>'+
+      '<div class="paper-actions"><a class="btn-paper solid" href="index.html">去起卦</a>'+
+      '<a class="btn-paper" href="anli.html">查看历史记录</a></div>'+
+      '</div></div>';
+    return;
+  }
+
+  var c = castFromPayload(payload);
+  var q = (payload.qtext || "").trim();
+  var qtype = payload.qtype || "其他";
+  var qLabel = q ? "所问「" + q + "」（" + qtype + "）" : "本次所问未记文字（" + qtype + "）";
+
+  /* ================= 文义素材 ================= */
+  var TRAIT = {乾:"刚健进取",兑:"和悦相待",离:"文明显明",震:"变动发动",巽:"渗入渐进",坎:"险难反复",艮:"止而守成",坤:"柔顺承载"};
+  var HINT = {
+    乾:"推进之力虽盛，宜防过刚则折",兑:"和悦协商是关键，口舌之间定分晓",
+   离:"文书、名声、显明之事易见分晓",震:"中段多突发变动，宜预留应变余地",
+   巽:"事情渗透渐进，急切不得",坎:"险难反复，中段最易生波折",
+   艮:"停滞守成之象，动不如静",坤:"顺势承载，宜借力不宜强推"
+  };
+  var RATING = {
+    "比和": {chance:"成算高", pace:"顺", act:"顺势推进", line:"体用比和，事情阻力小，顺势而为即可。"},
+    "用生体": {chance:"得助可进", pace:"渐快", act:"主动承接", line:"外力反助自身，多有贵人相济，宜主动承接。"},
+    "体克用": {chance:"可成", pace:"偏慢", act:"下实工夫", line:"自身之力可制其事，事在可成之列，但进展偏缓。"},
+    "用克体": {chance:"受阻", pace:"迟滞", act:"宜守不宜进", line:"事反制于己，此刻强推多半受挫，宜守不宜进。"},
+    "体生用": {chance:"耗泄", pace:"多劳", act:"节制投入", line:"自身之力外泄于事，付出多而所得少，宜先节制。"}
+  };
+  var rate = RATING[c.rel] || RATING["比和"];
+
+  function seasonInfo(){
+    var m = (c.time || new Date()).getMonth() + 1;
+    if (m >= 2 && m <= 4) return {name:"春", elem:"木", month:m};
+    if (m >= 5 && m <= 7) return {name:"夏", elem:"火", month:m};
+    if (m >= 8 && m <= 10) return {name:"秋", elem:"金", month:m};
+    return {name:"冬", elem:"水", month:m};
+  }
+  function seasonNote(){
+    var s = seasonInfo();
+    var strong = s.elem;
+    if ([3,6,9,12].indexOf(s.month) > -1) strong = "土";
+    var tiStrong = (c.ti.elem === strong);
+    return "此刻值" + s.name + "，" + strong + "当令，体卦" + c.ti.name + "（" + c.ti.elem + "）" +
+      (tiStrong ? "得令而气盛" : "失令而气平") + "——" +
+      (tiStrong ? "体气盛则虽有克亦无大害。" : "体气平则更宜借生扶之力，忌再受克。");
+  }
+
+  function yaoOf(guaName, pos){
+    var g = ZY[guaName];
+    if (!g) return null;
+    var hit = null;
+    g.yaoci.forEach(function(y){ if (y.pos === pos) hit = y; });
+    return hit;
+  }
+
+  function quote(src, text){
+    return '<div class="classic-paper"><div class="src">' + esc(src) + '</div><div class="txt">' + esc(text) + '</div></div>';
+  }
+  function read(tagline, paras){
+    return '<div class="dg-read"><div class="tagline">' + esc(tagline) + '</div>' +
+      paras.map(function(p){ return "<p>" + p + "</p>"; }).join("") + '</div>';
+  }
+
+  /* ================= 00a 起卦取数 ================= */
+  function qushuHTML(){
+    var rows;
+    if (c.method === "time" && c.meta){
+      rows = [
+        ["上卦", "年支" + c.meta.yz + "数 " + c.meta.ny + " + 农历" + c.meta.mLabel + "数 " + c.meta.nm + " + 农历" + c.meta.dLabel + "数 " + c.meta.nd + " = " + c.meta.s1 + " ÷ 8 余" + c.upperNum + " → 上卦 " + c.upper.sym + " " + c.upper.name + "（" + c.upper.nature + "·" + c.upper.elem + "）"],
+        ["下卦", "年月日数 " + c.meta.s1 + " + " + c.meta.hz + "时数 " + c.meta.nh + " = " + c.meta.s2 + " ÷ 8 余" + c.lowerNum + " → 下卦 " + c.lower.sym + " " + c.lower.name + "（" + c.lower.nature + "·" + c.lower.elem + "）"],
+        ["动爻", "年月日时总数 " + c.meta.s2 + " ÷ 6 余" + c.move + " → " + c.pos.k + "动"]
+      ];
+    } else {
+      rows = [
+        ["上卦", "第一数 " + c.n1 + " ÷ 8 余" + c.upperNum + " → 上卦 " + c.upper.sym + " " + c.upper.name + "（" + c.upper.nature + "·" + c.upper.elem + "）"],
+        ["下卦", "第二数 " + c.n2 + " ÷ 8 余" + c.lowerNum + " → 下卦 " + c.lower.sym + " " + c.lower.name + "（" + c.lower.nature + "·" + c.lower.elem + "）"],
+        ["动爻", "三数之和 " + c.n1 + " + " + c.n2 + " + " + c.n3 + " = " + (c.n1 + c.n2 + c.n3) + " ÷ 6 余" + c.move + " → " + c.pos.k + "动"]
+      ];
+    }
+    return '<section class="dg-step" id="dg-qushu">' +
+      '<div class="dg-head"><span class="no">00 / 起卦</span><h3>卦从何来 · 取数推演</h3></div>' +
+      '<div class="dg-summary">' + rows.map(function(r){
+        return '<div class="row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + esc(r[1]) + '</div></div>';
+      }).join("") + '</div>' +
+    '</section>';
+  }
+
+  /* ================= 00 直白结果 ================= */
+  function heroHTML(){
+    var v = VERDICT[c.rel];
+    var moveSide = c.move <= 3 ? "内部准备" : "外部应事";
+    var synth = "就" + qLabel + "：" + rate.line +
+      "进度" + rate.pace + "，宜" + rate.act + "。" +
+      "动爻落在" + c.pos.k + "，事情的枢纽在" + moveSide + "；" +
+      "变卦「" + c.biName + "」显示往后趋于" + (TRAIT[c.biUpper.name] || c.biUpper.attr) + "。";
+    return '<div class="sheet">' +
+      '<div class="vh-label">直白结果</div>' +
+      '<div class="vh-head">' + esc(v.head) + '——' + esc(rate.line) + '</div>' +
+      '<p class="vh-synth">' + esc(synth) + '</p>' +
+      '<div class="vh-chips">' +
+        '<div class="chip-info"><div class="k">成算</div><div class="v brass">' + esc(rate.chance) + '</div></div>' +
+        '<div class="chip-info"><div class="k">节奏</div><div class="v">' + esc(rate.pace) + '</div></div>' +
+        '<div class="chip-info"><div class="k">处置</div><div class="v">' + esc(rate.act) + '</div></div>' +
+        '<div class="chip-info"><div class="k">应期</div><div class="v">' + esc(TIMING[c.yong.num]) + '日 / ' + esc(TIMING[c.yong.num]) + '周内</div></div>' +
+      '</div>' +
+      '<div class="vh-meta">本卦 ' + esc(c.benName) + ' ' + c.benGlyph + ' → 互卦 ' + esc(c.huName) + ' ' + c.huGlyph + ' → 变卦 ' + esc(c.biName) + ' ' + c.biGlyph +
+      '　体 ' + esc(c.ti.name) + ' · 用 ' + esc(c.yong.name) + '（' + esc(c.rel) + '）　' + esc(c.method === "time" ? (c.meta && c.meta.label || "时间起卦") : ("三数 " + c.n1 + " · " + c.n2 + " · " + c.n3)) +
+      '</div>' +
+    '</div>';
+  }
+
+  /* ================= 01 本卦 ================= */
+  function benHTML(){
+    var g = ZY[c.benName] || {};
+    var yao = yaoOf(c.benName, c.move - 1);
+    var html = '<section class="dg-step" id="dg-ben">';
+    html += '<div class="dg-head"><span class="no">01 / 本卦</span><h3>本卦 · 所问之事的当前局面</h3><span class="dg-glyph">' + c.benGlyph + '</span></div>';
+    html += '<div class="dg-brief">本卦「' + esc(c.benName) + '」，上' + esc(c.upper.name) + '（' + esc(c.upper.nature) + '·' + esc(c.upper.elem) + '）下' + esc(c.lower.name) + '（' + esc(c.lower.nature) + '·' + esc(c.lower.elem) + '），是' + qLabel + '此刻的整体气象。</div>';
+    if (g.guaci) html += quote("《周易·" + (g.short || c.benName) + "》卦辞", g.guaci);
+    if (g.tuan) html += quote("《彖传》", g.tuan);
+    if (g.daxiang) html += quote("《大象传》", g.daxiang);
+    html += read("解读", [
+      "卦象结构：" + esc(c.upper.nature) + "覆于" + esc(c.lower.nature) + "之上，整体主「" + esc(c.upper.attr) + "」而基底行「" + esc(c.lower.attr) + "」。" +
+        "上卦" + esc(c.upper.name) + "属" + esc(c.upper.elem) + "，下卦" + esc(c.lower.name) + "属" + esc(c.lower.elem) + "，" +
+        (c.upper.elem === c.lower.elem ? "上下同气，气象纯粹。" : "上下异气，事情本身含着两股力量的配合。") ,
+      "就" + qLabel + "而言：此刻的局面是「" + esc(TRAIT[c.upper.name] || c.upper.attr) + "」压在「" + esc(TRAIT[c.lower.name] || c.lower.attr) + "」之上——" +
+        "事情的形态偏" + esc(c.upper.attr) + "，底子偏" + esc(c.lower.attr) + "。卦辞与彖传所示，是此局面的总纲；大象传「" + esc(g.daxiang || "") + "」一句，正是处此局面的立身之道。"
+    ]);
+    if (yao){
+      html += quote("动爻 · " + yao.tag + "（《周易·" + (g.short || c.benName) + "》爻辞）", yao.text);
+      html += read("动爻解读", [
+        "动爻落在" + esc(c.pos.k) + "：" + esc(c.pos.t),
+        "爻辞「" + esc(yao.text) + "」是此爻的古籍断语——动爻是全盘枢纽，此爻所在之卦（" + esc(c.yong.name) + "）定为用卦。" +
+          "爻辞所示之意，宜结合" + qLabel + "斟酌：它提示的是此爻位置上的处境，而非结局。"
+      ]);
+    }
+    html += '</section>';
+    return html;
+  }
+
+  /* ================= 02 互卦 ================= */
+  function huHTML(){
+    var g = ZY[c.huName] || {};
+    var html = '<section class="dg-step" id="dg-hu">';
+    html += '<div class="dg-head"><span class="no">02 / 互卦</span><h3>互卦 · 事情展开的中间过程</h3><span class="dg-glyph">' + c.huGlyph + '</span></div>';
+    html += '<div class="dg-brief">互卦「' + esc(c.huName) + '」藏于本卦二至五爻之间：二三四爻成下互' + esc(c.huLower.name) + '，三四五爻成上互' + esc(c.huUpper.name) + '，代表事情推进到中段的节奏。</div>';
+    if (g.guaci) html += quote("《周易·" + (g.short || c.huName) + "》卦辞", g.guaci);
+    if (g.daxiang) html += quote("《大象传》", g.daxiang);
+    html += read("解读", [
+      "互卦取自本卦内部，故示「过程」而非「结局」。上互" + esc(c.huUpper.name) + "（" + esc(c.huUpper.nature) + "·" + esc(c.huUpper.elem) + "）覆于下互" +
+        esc(c.huLower.name) + "（" + esc(c.huLower.nature) + "·" + esc(c.huLower.elem) + "）之上，中段气象主「" + esc(c.huUpper.attr) + "」而行「" + esc(c.huLower.attr) + "」。",
+      "中段之象提示：" + esc(HINT[c.huUpper.name] || c.huUpper.attr) + "；" + esc(HINT[c.huLower.name] || c.huLower.attr) + "。" +
+        "就" + qLabel + "而言，事情经过中段时最能看出苗头——互卦之义，《梅花易数》谓「互为中间之应」，问过程与节奏以它为主要依据。"
+    ]);
+    html += '</section>';
+    return html;
+  }
+
+  /* ================= 03 变卦 ================= */
+  function bianHTML(){
+    var g = ZY[c.biName] || {};
+    var trend = (TRAIT[c.biUpper.name] || c.biUpper.attr) + "而" + (TRAIT[c.biLower.name] || c.biLower.attr);
+    var html = '<section class="dg-step" id="dg-bian">';
+    html += '<div class="dg-head"><span class="no">03 / 变卦</span><h3>变卦 · 演变之后的趋势</h3><span class="dg-glyph">' + c.biGlyph + '</span></div>';
+    html += '<div class="dg-brief">第' + c.move + '爻阴阳互换，本卦「' + esc(c.benName) + '」变为「' + esc(c.biName) + '」——这是事情演变之后的气象，示趋势而不示判决。</div>';
+    if (g.guaci) html += quote("《周易·" + (g.short || c.biName) + "》卦辞", g.guaci);
+    if (g.daxiang) html += quote("《大象传》", g.daxiang);
+    html += read("解读", [
+      "变卦上" + esc(c.biUpper.name) + "（" + esc(c.biUpper.nature) + "·" + esc(c.biUpper.elem) + "）下" + esc(c.biLower.name) + "（" + esc(c.biLower.nature) + "·" + esc(c.biLower.elem) + "），" +
+        "卦象由「" + esc(TRAIT[c.upper.name] || c.upper.attr) + "」转向「" + esc(trend) + "」。",
+      "卦象已示其机：" + esc(rate.line) + "变卦卦辞「" + esc(g.guaci || "") + "」是往后气象的总纲。" +
+        "就" + qLabel + "而言，往后一段时间的走向偏" + esc(c.biUpper.attr) + "、" + esc(c.biLower.attr) + "——顺势则顺，逆势则滞。"
+    ]);
+    html += '</section>';
+    return html;
+  }
+
+  /* ================= 04 体用 ================= */
+  function tiyongHTML(){
+    var v = VERDICT[c.rel];
+    var html = '<section class="dg-step" id="dg-tiyong">';
+    html += '<div class="dg-head"><span class="no">04 / 体用</span><h3>体用关系 · 谁主谁从</h3></div>';
+    html += '<div class="dg-brief">动爻在' + (c.move <= 3 ? "下卦" : "上卦") + '，动者为用、静者为体：体卦' + esc(c.ti.name) + '（' + esc(c.ti.elem) + '）代表自身与立场，用卦' + esc(c.yong.name) + '（' + esc(c.yong.elem) + '）代表所问之事与外境。</div>';
+    if (MH["体用总诀"]) html += quote("《梅花易数·体用总诀》（节录）", MH["体用总诀"].slice(0, 220) + "…");
+    html += read("解读", [
+      "体用" + esc(c.rel) + "：" + esc(v.head) + esc(v.text),
+      "五行关系上，体" + esc(c.ti.elem) + "、用" + esc(c.yong.elem) + "，" + {
+        "比和":"两者同气，力量相协，故主顺遂",
+        "用生体":"用生体，外力滋养自身，故主得助",
+        "体克用":"体克用，我可制事而事可得，故主可成而迟",
+        "用克体":"用克体，事反制我，故主阻滞",
+        "体生用":"体生用，我气泄于事，故主耗泄"
+      }[c.rel] + "。",
+      seasonNote() + "应期参考：用卦" + esc(c.yong.name) + "数为" + esc(TIMING[c.yong.num]) + "，或应在" + esc(TIMING[c.yong.num]) + "日、" + esc(TIMING[c.yong.num]) + "周之内见分晓——此为《梅花易数》以卦数定应期之法，仅供参考。"
+    ]);
+    html += '</section>';
+    return html;
+  }
+
+  /* ================= 05 综合分析 ================= */
+  function synthHTML(){
+    var g = ZY[c.benName] || {};
+    var rows = [
+      ["局面（本卦）", "「" + c.benName + "」" + (g.guaci ? "——卦辞：" + g.guaci : "")],
+      ["过程（互卦）", "「" + c.huName + "」中段主" + (TRAIT[c.huUpper.name] || c.huUpper.attr) + "，" + (HINT[c.huUpper.name] || "")],
+      ["趋势（变卦）", "「" + c.biName + "」趋于" + (TRAIT[c.biUpper.name] || c.biUpper.attr) + "而" + (TRAIT[c.biLower.name] || c.biLower.attr)],
+      ["体用（主从）", c.rel + "——" + rate.line],
+      ["动爻（枢纽）", c.pos.k + "：" + c.pos.t],
+      ["应期（参考）", "用卦" + c.yong.name + "数" + TIMING[c.yong.num] + "，" + TIMING[c.yong.num] + "日 / " + TIMING[c.yong.num] + "周内"]
+    ];
+    var html = '<section class="dg-step" id="dg-synth">';
+    html += '<div class="dg-head"><span class="no">05 / 综合分析</span><h3>综合分析 · 五层合参</h3></div>';
+    html += '<div class="dg-summary">' + rows.map(function(r){
+      return '<div class="row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + esc(r[1]) + '</div></div>';
+    }).join("") + '</div>';
+    html += read("解读", [
+      "《梅花易数》断卦的次序是：先体用生克，次动爻位置，再互卦过程，再变卦趋势，最后参卦名卦辞落于所问之事。五层合参，结论如下——",
+      "就" + qLabel + "：" + esc(rate.line) + "事情的枢纽在" + esc(c.pos.k) + "（" + esc(c.pos.t) + "），" +
+        "过程留意" + esc(HINT[c.huUpper.name] || c.huUpper.attr) + "，往后趋" + esc(c.biUpper.attr) + "。" +
+        "综合言之：宜" + esc(rate.act) + "，" + (c.rel === "用克体" ? "此刻不必强求结果，蓄力待时反而是上策。" : "把握" + esc(TIMING[c.yong.num]) + "日/" + esc(TIMING[c.yong.num]) + "周之内的窗口期。"),
+      "最后记一句：卦示趋势与关系，不示判决。典籍把结构说透了，取舍仍在人。判断留给你。"
+    ]);
+    html += '<div class="dg-actions">' +
+      '<button class="btn-paper solid" id="btnAI"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.5 5.5l1.5 1.5M13 13l1.5 1.5M14.5 5.5L13 7M7 13l-1.5 1.5"/><circle cx="10" cy="10" r="3"/></svg>AI 辅助解读（MiMo）</button>' +
+      '<button class="btn-paper solid" id="btnSave"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M5 3h10v14l-5-4-5 4V3z"/></svg>保存到案例记录</button>' +
+      '<button class="btn-paper" id="btnPrint"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M6 8V3h8v5M6 15H4V8h12v7h-2M6 12h8v5H6z"/></svg>打印 / 存为 PDF</button>' +
+      '<a class="btn-paper" href="guandian.html?gua=' + encodeURIComponent(c.benName) + '">查本卦典籍原文</a>' +
+      '<a class="btn-paper" href="guandian.html?gua=' + encodeURIComponent(c.biName) + '">查变卦典籍原文</a>' +
+    '</div>';
+    html += '<div class="ai-panel" id="aiPanel" hidden></div>';
+    html += '<div class="disclaimer" style="color:var(--paper-muted)">此网站用于传统文化学习与个人记录，不构成医疗、法律或投资建议。卦象所示为关系与趋势，不是承诺。</div>';
+    html += '</section>';
+    return html;
+  }
+
+  /* ================= 渲染 ================= */
+  document.getElementById("dgHeading").textContent = q ? q : (c.benName + " · 断卦");
+  document.getElementById("dgSub").textContent =
+    qLabel + "　本卦" + c.benName + "，动爻" + c.pos.k + "。先看直白结果，再逐层读典籍与解读。";
+  root.innerHTML = heroHTML() + qushuHTML() + benHTML() + huHTML() + bianHTML() + tiyongHTML() + synthHTML();
+
+  document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+
+  document.getElementById("btnSave").addEventListener("click", function(){
+    var list = loadRecords();
+    var maxId = 0;
+    list.forEach(function(r){ var n = parseInt(r.id, 10); if (n > maxId) maxId = n; });
+    var rec = payloadFromCast(c, qtype, q, payload.time);
+    rec.id = pad3(maxId + 1);
+    rec.status = "待回看";
+    if (payload.method === "time") rec.meta = payload.meta || c.meta;
+    else { rec.n1 = c.n1; rec.n2 = c.n2; rec.n3 = c.n3; }
+    list.unshift(rec);
+    var ok = persist(list);
+    toast(ok ? "已保存到案例记录 · #" + rec.id : "本浏览器无法保存记录");
+  });
+
+  /* ================= MiMo 辅助解读 ================= */
+  var MIMO_ENDPOINT = "https://token-plan-cn.xiaomimimo.com/v1/chat/completions";
+  var MIMO_MODEL = "xiaomi/mimo-v2.6-pro";
+  var DEFAULT_KEY = "";   /* 公开部署版不含密钥：请在「AI 辅助解读」面板填入你的 MiMo Key */
+  function mimoKey(){
+    try { return localStorage.getItem("guanxiangtai.mimo.key") || DEFAULT_KEY; } catch(e){ return DEFAULT_KEY; }
+  }
+  function guaFull(name){
+    var g = ZY[name];
+    if (!g) return name + "（无典籍数据）";
+    var ys = g.yaoci.map(function(y){ return y.tag + "：" + y.text; }).join(" ");
+    return "《" + name + "》卦辞：" + g.guaci + " 彖曰：" + g.tuan + " 大象：" + g.daxiang + " 爻辞：" + ys;
+  }
+  function buildPrompt(){
+    var yao = yaoOf(c.benName, c.move - 1);
+    return [
+      "所问类型：" + qtype + "；所问之事：" + (q || "（未记所问）"),
+      "起卦方式：" + (c.method === "time" ? (c.meta && c.meta.label || "时间起卦") : ("三数起卦：" + c.n1 + "、" + c.n2 + "、" + c.n3)),
+      "本卦：" + c.benName + "（上" + c.upper.name + " 下" + c.lower.name + "）",
+      "动爻：" + c.pos.k + (yao ? "，爻辞：" + yao.text : ""),
+      "互卦（过程）：" + c.huName,
+      "变卦（趋势）：" + c.biName,
+      "体用：" + c.rel + "（体卦" + c.ti.name + "·" + c.ti.elem + "，用卦" + c.yong.name + "·" + c.yong.elem + "）",
+      "",
+      "【典籍原文·本卦】" + guaFull(c.benName),
+      "【典籍原文·互卦】" + guaFull(c.huName),
+      "【典籍原文·变卦】" + guaFull(c.biName),
+      "【典籍原文·《梅花易数》体用总诀】" + (MH["体用总诀"] || "").slice(0, 600),
+      "【典籍原文·《梅花易数》体用互变之诀】" + (MH["体用互变之诀"] || "").slice(0, 300)
+    ].join("\n");
+  }
+  var SYS_PROMPT = [
+    "你是「观象台」的梅花易数解卦辅助。用户借助梅花易数学习并整理思路，不是求绝对预言。",
+    "硬性规则：",
+    "1. 只允许依据用户消息中提供的典籍原文（《周易》卦爻辞、彖传、大象传，《梅花易数》各诀）解读；引用逐字照录并注明出自哪部典籍哪一卦/哪一篇。",
+    "2. 不得编造典籍文句。缺少典籍支撑的判断，明确标注「此处为依体用生克之推演，非典籍原文」。",
+    "3. 区分三层标记：【典籍原文】【传统解释】【推演】。",
+    "4. 结构固定：一、直白结论；二、本卦与当前局面；三、动爻与枢纽；四、互卦·过程；五、变卦·趋势；六、体用与应期；七、典籍依据小结。",
+    "5. 语气平实克制，不给绝对化吉凶承诺；结尾以一句「判断留给你」收束。"
+  ].join("\n");
+
+  function renderAI(text, isError){
+    var box = document.getElementById("aiPanel");
+    box.hidden = false;
+    box.innerHTML =
+      '<div class="ai-head"><div class="k">AI 辅助解读 · ' + MIMO_MODEL + '</div><button class="linkbtn" id="aiClose">收起</button></div>' +
+      '<div class="ai-key-row"><label class="label muted" for="aiKey">API Key（保存在本机浏览器）</label>' +
+      '<input id="aiKey" type="text" class="ai-key" placeholder="tp- 开头的密钥" value="' + esc((function(){ try { return localStorage.getItem("guanxiangtai.mimo.key") || ""; } catch(e){ return ""; } })()) + '">' +
+      '<button class="linkbtn" id="aiKeySave">保存</button></div>' +
+      '<div class="ai-body' + (isError ? " err" : "") + '">' + esc(text) + '</div>' +
+      '<div class="disclaimer" style="color:var(--paper-muted)">解读由 MiMo 依据上方典籍原文生成，供学习参考。</div>';
+    document.getElementById("aiClose").addEventListener("click", function(){ box.hidden = true; });
+    document.getElementById("aiKeySave").addEventListener("click", function(){
+      var v = document.getElementById("aiKey").value.trim();
+      try { if (v) localStorage.setItem("guanxiangtai.mimo.key", v); else localStorage.removeItem("guanxiangtai.mimo.key"); } catch(e){}
+      toast("API Key 已保存在本机");
+    });
+  }
+  document.getElementById("btnAI").addEventListener("click", function(){
+    var box = document.getElementById("aiPanel");
+    box.hidden = false;
+    box.innerHTML = '<div class="ai-head"><div class="k">AI 辅助解读 · MiMo</div></div><div class="ai-body">正在依典籍推演解读……（MiMo 为推理模型，约需十余秒）</div>';
+    fetch(MIMO_ENDPOINT, {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "Authorization": "Bearer " + mimoKey()},
+      body: JSON.stringify({
+        model: MIMO_MODEL,
+        messages: [{role: "system", content: SYS_PROMPT}, {role: "user", content: buildPrompt()}],
+        max_tokens: 3000,
+        temperature: 0.6
+      })
+    }).then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+    .then(function(res){
+      if (!res.ok || !res.j.choices || !res.j.choices.length){
+        throw new Error((res.j && res.j.error && res.j.error.message) || "请求未获有效返回");
+      }
+      var msg = res.j.choices[0].message || {};
+      renderAI(msg.content || "（模型未产出文本，请重试）", false);
+    })
+    .catch(function(e){
+      renderAI("调用失败：" + e.message + "。可在下方填入 API Key 后重试。", true);
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

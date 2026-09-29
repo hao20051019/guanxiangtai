@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0D0C">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>学习易理 · 观象台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap hd">
+    <a class="brand" href="index.html">
+      <span class="mark">观象台</span>
+      <span class="sub">PLUM BLOSSOM NUMEROLOGY</span>
+    </a>
+    <nav class="main" id="nav">
+      <a href="index.html">起卦</a>
+      <a href="duangua.html">断卦</a>
+      <a href="xueyi.html" class="on">学习易理</a>
+      <a href="guandian.html">典籍卦典</a>
+      <a href="anli.html">案例记录</a>
+      <a href="guanyu.html">关于梅花易数</a>
+    </nav>
+    <div class="hd-right">
+      <a class="textlink" href="anli.html">我的记录
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M3 10h13M11 5l5 5-5 5"/></svg>
+      </a>
+      <button class="iconbtn menubtn" id="menuBtn" aria-label="打开导航菜单" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="num">学习易理 · 四模块十四课</span>
+      <h2>从第一爻开始读懂变化</h2>
+      <p>每课附典籍原文。方法是有限的，象是无穷的——先把方法练熟，判断自然会来。</p>
+    </div>
+  </section>
+
+  <div class="wrap page-pad">
+    <div class="learn-grid">
+      <div class="rail-learn" id="lessonRail"></div>
+
+      <div class="canvas-learn">
+        <div class="layer-tabs" id="layerTabs" role="tablist" aria-label="卦象层次">
+          <button role="tab" class="on" data-layer="ben">本卦</button>
+          <button role="tab" data-layer="hu">互卦</button>
+          <button role="tab" data-layer="bian">变卦</button>
+          <button role="tab" data-layer="move">动爻</button>
+        </div>
+
+        <div class="learn-body">
+          <div class="mini-hex" id="miniHex" aria-hidden="true"></div>
+          <div class="learn-text">
+            <h3 id="layerTitle">本卦 · 所问之事的当前局面</h3>
+            <p id="layerText">本卦由上下两个卦象合成，代表此刻事情的整体气象。先看上下两卦的五行与生克，再看卦名所指之意。</p>
+            <div class="data" id="layerData"></div>
+            <div class="lesson-body" id="lessonBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap ft">
+    <div>
+      <div class="ft-mark">观象台</div>
+    </div>
+    <div>
+      <h4>方法</h4>
+      <p>
+        <a class="link" href="index.html">三数起卦</a><br>
+        <a class="link" href="index.html">时间起卦</a><br>
+        <a class="link" href="xueyi.html">体用关系</a><br>
+        <a class="link" href="xueyi.html">互卦与变卦</a>
+      </p>
+    </div>
+    <div>
+      <h4>说明</h4>
+      <p>
+        <a class="link" href="guandian.html">典籍卦典</a><br>
+        <a class="link" href="guanyu.html">使用说明</a><br>
+        此网站用于传统文化学习与个人记录，不构成医疗、法律或投资建议。
+      </p>
+    </div>
+  </div>
+  <div class="wrap ft-bottom">
+    <span>观象台 · 梅花易数工作台</span>
+    <span>卦数取先天数 · 断语依典籍</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ================= 课程（依典籍） ================= */
+  var LESSONS = window.CURRICULUM || [];
+  var rail = document.getElementById("lessonRail");
+  LESSONS.forEach(function(l, i){
+    var b = document.createElement("button");
+    b.className = "lesson" + (i === 0 ? " on" : "");
+    b.innerHTML = '<span class="t">' + esc(l.t) + '</span><span class="idx">' + ("0" + (i + 1)).slice(-2) + ' / ' + ("0" + LESSONS.length).slice(-2) + '</span>';
+    b.addEventListener("click", function(){
+      Array.prototype.forEach.call(rail.children, function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      renderLesson(i);
+    });
+    rail.appendChild(b);
+  });
+  function renderLesson(i){
+    var l = LESSONS[i];
+    document.getElementById("lessonBody").innerHTML =
+      '<p class="label" style="letter-spacing:.22em;color:var(--brass);">' + esc(l.mod) + '</p>' +
+      l.body.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join("") +
+      (l.quotes || []).map(function(q){
+        return '<blockquote class="classic"><div class="src">' + esc(q.src) + '</div><div class="txt">' + esc(q.text) + '</div></blockquote>';
+      }).join("");
+  }
+  renderLesson(0);
+
+  /* ================= 卦象层次画布（示例盘：三数 5·8·7） ================= */
+  var LAYER_TEXT = {
+    ben:  {title:"本卦 · 所问之事的当前局面", text:"本卦由上下两个卦象合成，代表此刻事情的整体气象。先看上下两卦的五行与生克，再看卦名所指之意。不要一上来就套吉凶词，先承认它描述的是「局面」。"},
+    hu:   {title:"互卦 · 事情展开的中间过程", text:"互卦藏于本卦之内，取二三四爻与三四五爻合成，代表事情经过的阶段与节奏。判断进展快慢、中途有无反复，多看这一层。"},
+    bian: {title:"变卦 · 演变之后的趋势", text:"动爻阴阳互换而成变卦，代表事情往后的走向。变卦给的是趋势与气象，不是承诺；它与本卦的差别，正是你该留意的变化。"},
+    move: {title:"动爻 · 全局的枢纽", text:"一位动爻，是整盘的枢纽。它所在的位置说明事情的着力点在何处，它所属的卦决定了体用之分。读盘时，先找动爻，再谈其他。"}
+  };
+  var current = cast(5, 8, 7);
+  var currentLayer = "ben";
+
+  function miniGroup(title, lines, movingIdx, hl, mv){
+    var rows = "";
+    for (var i = lines.length - 1; i >= 0; i--){
+      var v = lines[i];
+      var cls = "r" + (mv && i === movingIdx - 1 ? " mv" : "");
+      rows += '<div class="' + cls + '">' + (v === 1 ? '<i class="y"></i>' : '<i class="m"></i><i class="m"></i>') + '</div>';
+    }
+    return '<div class="grp' + (hl ? " hl" : "") + '"><div class="cap">' + title + '</div>' + rows + '</div>';
+  }
+  function renderMiniHex(){
+    document.getElementById("miniHex").innerHTML =
+      miniGroup("本卦 " + current.benName, current.lines, current.move, currentLayer === "ben", false) +
+      miniGroup("互卦 " + current.huName, current.huLower.lines.concat(current.huUpper.lines), 0, currentLayer === "hu", false) +
+      miniGroup("变卦 " + current.biName, current.biLines, 0, currentLayer === "bian", false) +
+      miniGroup("动爻 " + current.pos.k, current.lines, current.move, currentLayer === "move", true);
+  }
+  function renderLayerData(){
+    var info = LAYER_TEXT[currentLayer];
+    document.getElementById("layerTitle").textContent = info.title;
+    document.getElementById("layerText").textContent = info.text;
+    var d = "";
+    if (currentLayer === "ben"){
+      d = '<div>上卦 <b>' + current.upper.name + '</b> ' + current.upper.sym + ' · ' + current.upper.nature + ' · ' + current.upper.elem + '</div>' +
+          '<div>下卦 <b>' + current.lower.name + '</b> ' + current.lower.sym + ' · ' + current.lower.nature + ' · ' + current.lower.elem + '</div>' +
+          '<div>卦名 <b>' + current.benName + '</b> ' + current.benGlyph + '</div>';
+    } else if (currentLayer === "hu"){
+      d = '<div>上互 <b>' + current.huUpper.name + '</b> · 下互 <b>' + current.huLower.name + '</b></div>' +
+          '<div>卦名 <b>' + current.huName + '</b> ' + current.huGlyph + '</div>' +
+          '<div>取爻 <b>二三四 / 三四五</b></div>';
+    } else if (currentLayer === "bian"){
+      d = '<div>变卦 <b>' + current.biName + '</b> ' + current.biGlyph + '</div>' +
+          '<div>上卦 <b>' + current.biUpper.name + '</b> · 下卦 <b>' + current.biLower.name + '</b></div>' +
+          '<div>变动 <b>第' + current.move + '爻</b> 阴阳互换</div>';
+    } else {
+      d = '<div>动爻 <b>' + current.pos.k + '</b>（第' + current.move + '爻）</div>' +
+          '<div>用卦 <b>' + current.yong.name + '（' + current.yong.elem + '）</b> · 体卦 <b>' + current.ti.name + '（' + current.ti.elem + '）</b></div>' +
+          '<div>体用 <b>' + current.rel + '</b></div>';
+    }
+    document.getElementById("layerData").innerHTML = d;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#layerTabs button"), function(b){
+    b.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll("#layerTabs button"), function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      currentLayer = b.getAttribute("data-layer");
+      renderMiniHex();
+      renderLayerData();
+    });
+  });
+  renderMiniHex();
+  renderLayerData();
+
+})();
+</script>
+</body>
+</html>

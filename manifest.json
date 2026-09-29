@@ -1,0 +1,16 @@
+{
+ "name": "观象台 · 梅花易数工作台",
+ "short_name": "观象台",
+ "start_url": "./index.html",
+ "display": "standalone",
+ "background_color": "#0B0D0C",
+ "theme_color": "#0B0D0C",
+ "lang": "zh-CN",
+ "icons": [
+  {
+   "src": "icon-180.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  }
+ ]
+}
