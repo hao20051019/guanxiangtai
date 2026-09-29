@@ -191,18 +191,30 @@
     '</section>';
   }
 
-  /* ================= 00 直白结果 ================= */
+  /* ================= 00 直白结果（就你的问题说人话） ================= */
+  var PLAIN = {
+    "比和":  {head:"这事顺，照现在的路子接着走就行。", more:"没什么大阻力，别自己吓自己。"},
+    "用生体":{head:"形势是帮你的，主动点去接，能往前走。", more:"有人搭手、有外力可借，别客气。"},
+    "体克用":{head:"能成，但得你实打实出力，快不了。", more:"不是顺水推舟的事——你推多少，它走多少。"},
+    "用克体":{head:"现在推不动，硬推反而耗自己，先缓一缓。", more:"不是你不行，是时候没到；等形势松了再动不迟。"},
+    "体生用":{head:"你付出的比拿回来多，先把投入收着点。", more:"别一股脑全押上，留着余力。"}
+  };
+  var TREND_PLAIN = {乾:"强势推进",兑:"和气协商",离:"摆到明面上",震:"突然生变",巽:"慢慢渗透",坎:"反复折腾",艮:"僵住不动",坤:"顺着形势走"};
+
   function heroHTML(){
     var v = VERDICT[c.rel];
-    var moveSide = c.move <= 3 ? "内部准备" : "外部应事";
-    var synth = "就" + qLabel + "：" + rate.line +
-      "进度" + rate.pace + "，宜" + rate.act + "。" +
-      "动爻落在" + c.pos.k + "，事情的枢纽在" + moveSide + "；" +
-      "变卦「" + c.biName + "」显示往后趋于" + (TRAIT[c.biUpper.name] || c.biUpper.attr) + "。";
+    var pl = PLAIN[c.rel] || PLAIN["比和"];
+    var subject = q ? "就你问的「" + q + "」" : "就这次起卦问的" + qtype + "类的事";
+    var key = c.move <= 3
+      ? "关键在你自己这边——准备、决心、内部条件都在你手里，" + c.pos.k + "这一动，说明着力点在内。"
+      : "关键在外面——人、事、时机这些你说了不算的部分，" + c.pos.k + "这一动，说明着力点在外应。";
+    var trend = "往后多半是「" + (TREND_PLAIN[c.biUpper.name] || c.biUpper.attr) + "」的路子，心里先有个准备。";
+    var timing = "别盯太紧，" + TIMING[c.yong.num] + "天到" + TIMING[c.yong.num] + "周内看个眉目。";
     return '<div class="sheet">' +
-      '<div class="vh-label">直白结果</div>' +
-      '<div class="vh-head">' + esc(v.head) + '——' + esc(rate.line) + '</div>' +
-      '<p class="vh-synth">' + esc(synth) + '</p>' +
+      '<div class="vh-label">直白结果 · 就你的问题说人话</div>' +
+      '<div class="vh-head">' + esc(subject) + '——' + esc(pl.head) + '</div>' +
+      '<p class="vh-synth">' + esc(pl.more + key + trend + timing) + '</p>' +
+      '<p class="vh-classic-line">典籍断语：' + esc(v.head) + '（' + esc(c.rel) + '，依《梅花易数》体用生克之说）</p>' +
       '<div class="vh-chips">' +
         '<div class="chip-info"><div class="k">成算</div><div class="v brass">' + esc(rate.chance) + '</div></div>' +
         '<div class="chip-info"><div class="k">节奏</div><div class="v">' + esc(rate.pace) + '</div></div>' +

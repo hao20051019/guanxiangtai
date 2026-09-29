@@ -264,7 +264,11 @@ function payloadFromCast(c, qtype, qtext, stamp){
   };
 }
 function castFromPayload(p){
-  var meta = p.meta || {method: p.method || "numbers"};
+  var meta = p.meta;
+  if (!meta){
+    meta = {method: p.method || "numbers"};
+    if (p.method !== "time"){ meta.n1 = p.n1; meta.n2 = p.n2; meta.n3 = p.n3; }
+  }
   var c = castByNums(p.upperNum, p.lowerNum, p.move, meta);
   if (p.time) c.time = parseTime(p.time);
   return c;
