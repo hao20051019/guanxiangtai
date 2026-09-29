@@ -548,3 +548,37 @@ nav.main a.on{color:var(--ink);}
 .classic .qnum:hover{background:var(--surface-raised);}
 .classic .qnum.on{background:var(--brass);color:var(--ink-dark);}
 .classic .qpage-no{color:var(--ink-muted);}
+
+
+/* ================= 断卦页：步骤区在黑底上，全部文字亮色系 ================= */
+main.duangua .dg-step{border-top-color:var(--line-dark);}
+main.duangua .dg-head .no{color:var(--brass);}
+main.duangua .dg-head h3{color:var(--ink);}
+main.duangua .dg-glyph{color:var(--brass);opacity:.9;}
+main.duangua .dg-brief{color:var(--ink);}
+main.duangua .dg-read .tagline{color:var(--ink-muted);}
+main.duangua .dg-read p{color:var(--ink);}
+main.duangua .classic-paper{background:var(--surface-raised);border-left-color:var(--brass);}
+main.duangua .classic-paper .src{color:var(--brass-light);}
+main.duangua .classic-paper .txt{color:var(--ink);}
+main.duangua .dg-summary{border-color:var(--line-dark);}
+main.duangua .dg-summary .row{border-bottom-color:var(--line-dark);}
+main.duangua .dg-summary .k{color:var(--ink-muted);}
+main.duangua .dg-summary .v{color:var(--ink);}
+main.duangua .qnum{border-color:var(--line-dark);color:var(--ink);}
+main.duangua .qnum:hover{background:var(--surface-deep);}
+main.duangua .qnum.on{background:var(--brass);color:var(--ink-dark);}
+main.duangua .qpage-no{color:var(--ink-muted);}
+main.duangua .btn-paper{border-color:var(--line-dark);color:var(--ink);background:none;}
+main.duangua .btn-paper:hover{border-color:var(--brass);color:var(--brass);background:none;}
+main.duangua .btn-paper.solid{background:var(--brass);color:var(--ink-dark);border-color:var(--brass);}
+main.duangua .btn-paper.solid:hover{background:var(--brass-light);}
+main.duangua .disclaimer{color:var(--ink-muted) !important;}
+main.duangua .ai-panel{background:var(--surface-deep);border-color:var(--line-dark);}
+main.duangua .ai-head .k{color:var(--ink-muted);}
+main.duangua .ai-body{color:var(--ink);}
+main.duangua .ai-body.err{color:#E09088;}
+main.duangua .ai-key{color:var(--ink);border-bottom-color:var(--line-dark);}
+main.duangua .ai-key:focus{border-bottom-color:var(--brass);}
+main.duangua .ai-panel .linkbtn{color:var(--ink-muted);}
+main.duangua .ai-panel .linkbtn:hover{color:var(--brass);}
