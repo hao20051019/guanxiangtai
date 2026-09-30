@@ -159,8 +159,8 @@
     return hit;
   }
 
-  function quote(src, text){
-    return renderQuote(src, text, false);
+  function quote(src, text, trans){
+    return renderQuote(src, text, false, trans || "");
   }
   function read(tagline, paras){
     return '<div class="dg-read"><div class="tagline">' + esc(tagline) + '</div>' +
@@ -234,9 +234,9 @@
     var html = '<section class="dg-step" id="dg-ben">';
     html += '<div class="dg-head"><span class="no">01 / 本卦</span><h3>本卦 · 所问之事的当前局面</h3><span class="dg-glyph">' + c.benGlyph + '</span></div>';
     html += '<div class="dg-brief">本卦「' + esc(c.benName) + '」，上' + esc(c.upper.name) + '（' + esc(c.upper.nature) + '·' + esc(c.upper.elem) + '）下' + esc(c.lower.name) + '（' + esc(c.lower.nature) + '·' + esc(c.lower.elem) + '），是' + qLabel + '此刻的整体气象。</div>';
-    if (g.guaci) html += quote("《周易·" + (g.short || c.benName) + "》卦辞", g.guaci);
-    if (g.tuan) html += quote("《彖传》", g.tuan);
-    if (g.daxiang) html += quote("《大象传》", g.daxiang);
+    if (g.guaci) html += quote("《周易·" + (g.short || c.benName) + "》卦辞", g.guaci, fanyiOf("g:" + g.kw));
+    if (g.tuan) html += quote("《彖传》", g.tuan, fanyiOf("t:" + g.kw));
+    if (g.daxiang) html += quote("《大象传》", g.daxiang, fanyiOf("d:" + g.kw));
     html += read("解读", [
       "卦象结构：" + esc(c.upper.nature) + "覆于" + esc(c.lower.nature) + "之上，整体主「" + esc(c.upper.attr) + "」而基底行「" + esc(c.lower.attr) + "」。" +
         "上卦" + esc(c.upper.name) + "属" + esc(c.upper.elem) + "，下卦" + esc(c.lower.name) + "属" + esc(c.lower.elem) + "，" +
@@ -245,7 +245,7 @@
         "事情的形态偏" + esc(c.upper.attr) + "，底子偏" + esc(c.lower.attr) + "。卦辞与彖传所示，是此局面的总纲；大象传「" + esc(g.daxiang || "") + "」一句，正是处此局面的立身之道。"
     ]);
     if (yao){
-      html += quote("动爻 · " + yao.tag + "（《周易·" + (g.short || c.benName) + "》爻辞）", yao.text);
+      html += quote("动爻 · " + yao.tag + "（《周易·" + (g.short || c.benName) + "》爻辞）", yao.text, fanyiOf("y:" + g.kw + ":" + yao.tag));
       html += read("动爻解读", [
         "动爻落在" + esc(c.pos.k) + "：" + esc(c.pos.t),
         "爻辞「" + esc(yao.text) + "」是此爻的古籍断语——动爻是全盘枢纽，此爻所在之卦（" + esc(c.yong.name) + "）定为用卦。" +
@@ -262,8 +262,8 @@
     var html = '<section class="dg-step" id="dg-hu">';
     html += '<div class="dg-head"><span class="no">02 / 互卦</span><h3>互卦 · 事情展开的中间过程</h3><span class="dg-glyph">' + c.huGlyph + '</span></div>';
     html += '<div class="dg-brief">互卦「' + esc(c.huName) + '」藏于本卦二至五爻之间：二三四爻成下互' + esc(c.huLower.name) + '，三四五爻成上互' + esc(c.huUpper.name) + '，代表事情推进到中段的节奏。</div>';
-    if (g.guaci) html += quote("《周易·" + (g.short || c.huName) + "》卦辞", g.guaci);
-    if (g.daxiang) html += quote("《大象传》", g.daxiang);
+    if (g.guaci) html += quote("《周易·" + (g.short || c.huName) + "》卦辞", g.guaci, fanyiOf("g:" + g.kw));
+    if (g.daxiang) html += quote("《大象传》", g.daxiang, fanyiOf("d:" + g.kw));
     html += read("解读", [
       "互卦取自本卦内部，故示「过程」而非「结局」。上互" + esc(c.huUpper.name) + "（" + esc(c.huUpper.nature) + "·" + esc(c.huUpper.elem) + "）覆于下互" +
         esc(c.huLower.name) + "（" + esc(c.huLower.nature) + "·" + esc(c.huLower.elem) + "）之上，中段气象主「" + esc(c.huUpper.attr) + "」而行「" + esc(c.huLower.attr) + "」。",
@@ -281,8 +281,8 @@
     var html = '<section class="dg-step" id="dg-bian">';
     html += '<div class="dg-head"><span class="no">03 / 变卦</span><h3>变卦 · 演变之后的趋势</h3><span class="dg-glyph">' + c.biGlyph + '</span></div>';
     html += '<div class="dg-brief">第' + c.move + '爻阴阳互换，本卦「' + esc(c.benName) + '」变为「' + esc(c.biName) + '」——这是事情演变之后的气象，示趋势而不示判决。</div>';
-    if (g.guaci) html += quote("《周易·" + (g.short || c.biName) + "》卦辞", g.guaci);
-    if (g.daxiang) html += quote("《大象传》", g.daxiang);
+    if (g.guaci) html += quote("《周易·" + (g.short || c.biName) + "》卦辞", g.guaci, fanyiOf("g:" + g.kw));
+    if (g.daxiang) html += quote("《大象传》", g.daxiang, fanyiOf("d:" + g.kw));
     html += read("解读", [
       "变卦上" + esc(c.biUpper.name) + "（" + esc(c.biUpper.nature) + "·" + esc(c.biUpper.elem) + "）下" + esc(c.biLower.name) + "（" + esc(c.biLower.nature) + "·" + esc(c.biLower.elem) + "），" +
         "卦象由「" + esc(TRAIT[c.upper.name] || c.upper.attr) + "」转向「" + esc(trend) + "」。",
@@ -299,7 +299,7 @@
     var html = '<section class="dg-step" id="dg-tiyong">';
     html += '<div class="dg-head"><span class="no">04 / 体用</span><h3>体用关系 · 谁主谁从</h3></div>';
     html += '<div class="dg-brief">动爻在' + (c.move <= 3 ? "下卦" : "上卦") + '，动者为用、静者为体：体卦' + esc(c.ti.name) + '（' + esc(c.ti.elem) + '）代表自身与立场，用卦' + esc(c.yong.name) + '（' + esc(c.yong.elem) + '）代表所问之事与外境。</div>';
-    if (MH["体用总诀"]) html += quote("《梅花易数·体用总诀》（全文）", MH["体用总诀"]);
+    if (MH["体用总诀"]) html += quote("《梅花易数·体用总诀》（全文）", MH["体用总诀"], fanyiOf("m:体用总诀"));
     html += read("解读", [
       "体用" + esc(c.rel) + "：" + esc(v.head) + esc(v.text),
       "五行关系上，体" + esc(c.ti.elem) + "、用" + esc(c.yong.elem) + "，" + {

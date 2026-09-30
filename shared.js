@@ -347,28 +347,46 @@ function paginateText(text, per){
   return pages.length ? pages : [t];
 }
 var _qpN = 0;
-function renderQuote(src, text, dark){
+function _pagerHTML(pid, n){
+  if (n <= 1) return "";
+  var nums = "";
+  for (var i = 0; i < n; i++){
+    nums += '<button type="button" class="qnum' + (i === 0 ? " on" : "") + '" data-qp="' + pid + '" data-qi="' + i + '">' + (i + 1) + '</button>';
+  }
+  return '<div class="qpager">' +
+    '<button type="button" class="qnum" data-qp="' + pid + '" data-qi="-1">‹ 上一页</button>' +
+    nums +
+    '<button type="button" class="qnum" data-qp="' + pid + '" data-qi="-2">下一页 ›</button>' +
+    '<span class="qpage-no" data-qno="' + pid + '">第 1 / ' + n + ' 页</span></div>';
+}
+function _pagesHTML(pid, arr){
+  return arr.map(function(p, i){
+    return '<div class="qpage" data-qid="' + pid + '" data-qi="' + i + '"' + (i ? " hidden" : "") + '>' + esc(p) + '</div>';
+  }).join("");
+}
+function renderQuote(src, text, dark, trans){
   var pages = paginateText(text);
   var base = dark ? "classic" : "classic-paper";
-  if (pages.length === 1){
-    return '<div class="' + base + '"><div class="src">' + esc(src) + '</div><div class="txt">' + esc(text) + '</div></div>';
-  }
   var id = "qp" + (++_qpN);
-  var body = pages.map(function(p, i){
-    return '<div class="qpage" data-qid="' + id + '" data-qi="' + i + '"' + (i ? " hidden" : "") + '>' + esc(p) + '</div>';
-  }).join("");
-  var nums = pages.map(function(_, i){
-    return '<button type="button" class="qnum' + (i === 0 ? " on" : "") + '" data-qp="' + id + '" data-qi="' + i + '">' + (i + 1) + '</button>';
-  }).join("");
-  return '<div class="' + base + '"><div class="src">' + esc(src) + '（全文 · 分 ' + pages.length + ' 页读完）</div>' +
-    '<div class="txt">' + body + '</div>' +
-    '<div class="qpager">' +
-      '<button type="button" class="qnum" data-qp="' + id + '" data-qi="-1">‹ 上一页</button>' +
-      nums +
-      '<button type="button" class="qnum" data-qp="' + id + '" data-qi="-2">下一页 ›</button>' +
-      '<span class="qpage-no" data-qno="' + id + '">第 1 / ' + pages.length + ' 页</span>' +
-    '</div></div>';
+  var body = pages.length === 1
+    ? '<div class="txt">' + esc(text) + '</div>'
+    : '<div class="txt">' + _pagesHTML(id, pages) + '</div>' + _pagerHTML(id, pages.length);
+  var transBlock = "";
+  if (trans && String(trans).trim()){
+    var tid = id + "-t";
+    var tp = paginateText(trans, 300);
+    transBlock = '<div class="qtrans"><span class="qtrans-label">白话</span><div class="qtrans-txt">' +
+      (tp.length === 1 ? esc(trans) : _pagesHTML(tid, tp)) + '</div>' + _pagerHTML(tid, tp.length) + '</div>';
+  }
+  return '<div class="' + base + '"><div class="src">' + esc(src) +
+    (pages.length > 1 ? '（全文 · 分 ' + pages.length + ' 页读完）' : '') + '</div>' +
+    body + transBlock + '</div>';
 }
+function fanyiOf(key){
+  var f = window.GZ && window.GZ.FANYI;
+  return (f && f[key]) || "";
+}
+
 if (typeof document !== "undefined") document.addEventListener("click", function(e){
   var b = e.target.closest ? e.target.closest("[data-qp]") : null;
   if (!b) return;

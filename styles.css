@@ -582,3 +582,15 @@ main.duangua .ai-key{color:var(--ink);border-bottom-color:var(--line-dark);}
 main.duangua .ai-key:focus{border-bottom-color:var(--brass);}
 main.duangua .ai-panel .linkbtn{color:var(--ink-muted);}
 main.duangua .ai-panel .linkbtn:hover{color:var(--brass);}
+
+
+/* ================= 白话小字翻译 ================= */
+.qtrans{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line-light);}
+.qtrans-label{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.22em;color:var(--paper-muted);display:block;}
+.qtrans-txt{margin-top:6px;font-family:var(--sans);font-size:12.5px;line-height:1.95;color:var(--paper-muted);}
+main.duangua .qtrans, .guodian .qtrans{border-top-color:var(--line-dark);}
+main.duangua .qtrans-label, .guodian .qtrans-label{color:var(--brass-light);}
+main.duangua .qtrans-txt, .guodian .qtrans-txt{color:var(--ink-muted);}
+.classic .qtrans{border-top-color:var(--line-dark);}
+.classic .qtrans-label{color:var(--brass-light);}
+.classic .qtrans-txt{color:var(--ink-muted);}

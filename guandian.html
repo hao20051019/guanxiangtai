@@ -140,11 +140,15 @@
       '</button>';
     }).join("") || '<div class="ledger-empty">未找到匹配的卦。</div>';
   }
+  function fanyiHTML(key){
+    var f = fanyiOf(key);
+    return f ? '<div class="qtrans"><span class="qtrans-label">白话</span><div class="qtrans-txt">' + esc(f) + '</div></div>' : "";
+  }
   function renderDetail(name){
     var g = ZY[name];
     if (!g){ gdDetail.innerHTML = ""; return; }
     var rows = g.yaoci.map(function(y){
-      return '<div class="gd-yao' + (y.pos >= 6 ? " yong" : "") + '"><span class="gd-tag mono">' + esc(y.tag) + '</span><p>' + esc(y.text) + '</p></div>';
+      return '<div class="gd-yao' + (y.pos >= 6 ? " yong" : "") + '"><span class="gd-tag mono">' + esc(y.tag) + '</span><div><p>' + esc(y.text) + '</p>' + fanyiHTML("y:" + g.kw + ":" + y.tag) + '</div></div>';
     }).join("");
     gdDetail.innerHTML =
       '<div class="gd-head">' +
@@ -152,9 +156,9 @@
         '<div class="res-sub" style="color:var(--paper-muted)">《周易》第' + g.kw + '卦 · ' + esc(g.short) + '</div></div>' +
         '<button class="btn-paper" id="gdClose">收起</button>' +
       '</div>' +
-      '<div class="gd-block"><div class="k">卦辞</div><p class="gd-text">' + esc(g.guaci) + '</p></div>' +
-      '<div class="gd-block"><div class="k">彖传</div><p class="gd-text">' + esc(g.tuan) + '</p></div>' +
-      '<div class="gd-block"><div class="k">大象传</div><p class="gd-text">' + esc(g.daxiang) + '</p></div>' +
+      '<div class="gd-block"><div class="k">卦辞</div><p class="gd-text">' + esc(g.guaci) + '</p>' + fanyiHTML("g:" + g.kw) + '</div>' +
+      '<div class="gd-block"><div class="k">彖传</div><p class="gd-text">' + esc(g.tuan) + '</p>' + fanyiHTML("t:" + g.kw) + '</div>' +
+      '<div class="gd-block"><div class="k">大象传</div><p class="gd-text">' + esc(g.daxiang) + '</p>' + fanyiHTML("d:" + g.kw) + '</div>' +
       '<div class="gd-block"><div class="k">爻辞</div>' + rows + '</div>' +
       '<div class="disclaimer" style="color:var(--paper-muted)">出处：《周易》经文（卦辞、爻辞）与《易传》（彖、大象）。文本经多源校勘，异文依通行本。</div>';
     document.getElementById("gdClose").addEventListener("click", function(){ gdDetail.innerHTML = ""; });
